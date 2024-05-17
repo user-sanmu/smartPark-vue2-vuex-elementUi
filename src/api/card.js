@@ -6,7 +6,7 @@ import axios from '@/utils/request'
  * @returns
  */
 export const getCardListApi = params => {
-  return axios.get('/https://api-hmzs.itheima.net/v1/parking/card/list', {
+  return axios.get('https://api-hmzs.itheima.net/v1/parking/card/list', {
     params
   })
 }

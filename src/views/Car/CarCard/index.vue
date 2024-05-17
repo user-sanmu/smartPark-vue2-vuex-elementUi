@@ -3,29 +3,53 @@
     <!-- 搜索区域 -->
     <div class="search-container">
       <span class="search-label">车牌号码：</span>
-      <el-input clearable placeholder="请输入内容" class="search-main" />
+      <el-input
+        v-model="params.carNumber"
+        clearable
+        placeholder="请输入内容"
+        class="search-main"
+      />
       <span class="search-label">车主姓名：</span>
-      <el-input clearable placeholder="请输入内容" class="search-main" />
+      <el-input
+        v-model="params.personName"
+        clearable
+        placeholder="请输入内容"
+        class="search-main"
+      />
       <span class="search-label">状态：</span>
-      <el-select>
-        <el-option v-for="item in []" :key="item.id" />
+      <el-select v-model="params.cardStatus">
+        <el-option
+          v-for="item in statusList"
+          :key="item.value"
+          :label="item.text"
+          :value="item.value"
+        />
       </el-select>
-      <el-button type="primary" class="search-btn">查询</el-button>
+      <el-button type="primary" class="search-btn" @click="search"
+        >查询</el-button
+      >
     </div>
     <!-- 新增删除操作区域 -->
     <div class="create-container">
-      <el-button type="primary">添加月卡</el-button>
+      <el-button type="primary" @click="$router.push('/Car/addCard')"
+        >添加月卡</el-button
+      >
       <el-button>批量删除</el-button>
     </div>
     <!-- 表格区域 -->
     <div class="table">
-      <el-table style="width: 100%" :data="[]">
-        <el-table-column type="index" label="序号" />
-        <el-table-column label="车主名称" />
-        <el-table-column label="联系方式" />
-        <el-table-column label="车牌号码" />
-        <el-table-column label="车辆品牌" />
-        <el-table-column label="剩余有效天数" />
+      <el-table style="width: 100%" :data="list">
+        <el-table-column type="index" label="序号" :index="indexMethod" />
+        <el-table-column label="车主名称" prop="personName" />
+        <el-table-column label="联系方式" prop="phoneNumber" />
+        <el-table-column label="车牌号码" prop="carNumber" />
+        <el-table-column label="车辆品牌" prop="carBrand" />
+        <el-table-column label="剩余有效天数" prop="totalEffectiveDate" />
+        <el-table-column
+          label="状态"
+          prop="cardStatus"
+          :formatter="formatter"
+        />
         <el-table-column label="操作" fixed="right" width="180">
           <template #default="scope">
             <el-button size="mini" type="text">续费</el-button>
@@ -37,7 +61,17 @@
       </el-table>
     </div>
     <div class="page-container">
-      <el-pagination layout="total, prev, pager, next" :total="0" />
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="params.page"
+        :page-sizes="[3, 5, 7, 10]"
+        :page-size="params.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        background
+      >
+      </el-pagination>
     </div>
     <!-- 添加楼宇 -->
     <el-dialog title="添加楼宇" width="580px">
@@ -73,17 +107,58 @@ export default {
     return {
       params: {
         page: 1,
-        pageSize: 10,
+        pageSize: 3,
         carNumber: '',
         personName: '',
         cardStatus: null
-      }
+      },
+      list: [],
+      total: null,
+      statusList: [
+        { text: '全部', value: null },
+        { text: '可用', value: '0' },
+        { text: '已过期', value: '1' }
+      ]
     }
   },
-  created () {},
+  created () {
+    this.getCardList()
+  },
   methods: {
     async getCardList () {
-      await getCardListApi(this.params)
+      const res = await getCardListApi(this.params)
+      this.list = res.data.rows
+      this.total = res.data.total
+      console.log(res)
+    },
+    formatter (row, column, cellValue, index) {
+      // if (cellValue) {
+      //   return '不可用'
+      // } else {
+      //   return '可用'
+      // }
+      const status = {
+        0: '可用',
+        1: '不可用'
+      }
+      return status[cellValue]
+    },
+    handleSizeChange (val) {
+      console.log(`每页 ${val} 条`)
+      this.params.pageSize = val
+      this.getCardList()
+    },
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
+      this.params.page = val
+      this.getCardList()
+    },
+    indexMethod (index) {
+      return index + (this.params.page - 1) * this.params.pageSize + 1
+    },
+    search () {
+      this.params.page = 1
+      this.getCardList()
     }
   }
 }
