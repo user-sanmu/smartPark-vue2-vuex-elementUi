@@ -17,7 +17,7 @@
         </el-form-item>
 
         <el-form-item prop="remember">
-          <el-checkbox v-model="loginForm.checked">记住我</el-checkbox>
+          <el-checkbox v-model="checked">记住我</el-checkbox>
         </el-form-item>
 
         <el-form-item>
@@ -31,14 +31,16 @@
 </template>
 
 <script>
+import { ZSPCTOKEN_KEY } from '@/constants/KEY'
+
 export default {
   name: 'Login',
   data () {
     return {
+      checked: true,
       loginForm: {
         username: '',
-        password: '',
-        checked: false
+        password: ''
       },
       rules: {
         username: [
@@ -53,19 +55,32 @@ export default {
       this.$refs.form.validate(async flag => {
         if (!flag) return
 
-        try {
-          // const res = await loginAPI(this.loginForm)
-          // this.$store.commit('user/setToken', res.data.token)
-          await this.$store.dispatch('user/loginAction', this.loginForm)
-          this.$message.success('登录成功')
-          setTimeout(() => {
-            this.$router.push('/')
-          }, 1500)
-        } catch (err) {
-          console.dir(err)
-          this.$message.error(err.response.data.msg)
+        // const res = await loginAPI(this.loginForm)
+        // this.$store.commit('user/setToken', res.data.token)
+        await this.$store.dispatch('user/loginAction', this.loginForm)
+        if (this.checked) {
+          localStorage.setItem(ZSPCTOKEN_KEY, JSON.stringify(this.loginForm))
+        } else {
+          localStorage.removeItem(ZSPCTOKEN_KEY)
         }
+
+        this.$message.success('登录成功')
+        setTimeout(() => {
+          if (this.$route.query.redirect) {
+            this.$router.push(this.$route.query.redirect)
+          } else {
+            this.$router.push('/')
+          }
+        }, 1500)
       })
+    }
+  },
+  created () {
+    const loginData = localStorage.getItem(ZSPCTOKEN_KEY)
+    if (loginData) {
+      const { username, password } = JSON.parse(loginData)
+      this.loginForm.username = username
+      this.loginForm.password = password
     }
   }
 }
