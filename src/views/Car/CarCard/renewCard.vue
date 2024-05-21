@@ -1,10 +1,7 @@
 <template>
   <div class="add-card">
     <header class="add-header">
-      <el-page-header
-        :content="id ? '编辑月卡' : '增加月卡'"
-        @back="$router.back()"
-      />
+      <el-page-header content="月卡续费" @back="$router.back()" />
     </header>
     <main class="add-main">
       <div class="form-container">
@@ -17,22 +14,22 @@
             ref="carInfoForm"
           >
             <el-form-item label="车主姓名" prop="personName">
-              <el-input v-model="carInfoForm.personName" />
+              <el-input v-model="carInfoForm.personName" :disabled="true" />
             </el-form-item>
             <el-form-item label="联系方式" prop="phoneNumber">
-              <el-input v-model="carInfoForm.phoneNumber" />
+              <el-input v-model="carInfoForm.phoneNumber" :disabled="true" />
             </el-form-item>
             <el-form-item label="车辆号码" prop="carNumber">
-              <el-input v-model="carInfoForm.carNumber" />
+              <el-input v-model="carInfoForm.carNumber" :disabled="true" />
             </el-form-item>
             <el-form-item label="车辆品牌" prop="carBrand">
-              <el-input v-model="carInfoForm.carBrand" />
+              <el-input v-model="carInfoForm.carBrand" :disabled="true" />
             </el-form-item>
           </el-form>
         </div>
       </div>
       <div class="form-container">
-        <div class="title">最新一次月卡缴费信息</div>
+        <div class="title">月卡缴费</div>
         <div class="form">
           <el-form
             ref="feeInfoForm"
@@ -71,14 +68,14 @@
     <footer class="add-footer">
       <div class="btn-container">
         <el-button @click="resetForm">重置</el-button>
-        <el-button type="primary" @click="confirmAdd">确定</el-button>
+        <el-button type="primary" @click="confirmRenew">确定</el-button>
       </div>
     </footer>
   </div>
 </template>
 
 <script>
-import { addCardApi, editCardApi, editCardDetailApi } from '@/api/card'
+import { checkCardApi, renewCardApi } from '@/api/card'
 
 export default {
   name: 'addCard',
@@ -112,12 +109,6 @@ export default {
         paymentMethod: ''
       },
       feeFormRules: {
-        payTime: [
-          {
-            required: true,
-            message: '请选择支付时间'
-          }
-        ],
         paymentAmount: [
           {
             required: true,
@@ -129,7 +120,7 @@ export default {
           {
             required: true,
             message: '请选择支付方式',
-            trigger: 'change'
+            trigger: 'blur'
           }
         ]
       },
@@ -150,53 +141,33 @@ export default {
     }
   },
   created () {
-    if (this.id) {
-      this.getCardDetail()
-    }
+    this.getCardDetail()
   },
   methods: {
-    validatorCarNumber (rule, value, callback) {
-      // console.log(value)
-      const plateNumberRegex = /^[\u4E00-\u9FA5][\da-zA-Z]{6}$/
-      if (plateNumberRegex.test(value)) {
-        callback()
-      } else {
-        callback(new Error('车牌号格式不正确'))
-      }
-    },
-    confirmAdd () {
-      this.$refs.carInfoForm.validate(flag => {
+    confirmRenew () {
+      this.$refs.feeInfoForm.validate(async flag => {
         if (!flag) return
-        this.$refs.feeInfoForm.validate(async flag => {
-          if (!flag) return
-          const requestData = {
-            ...this.carInfoForm,
-            ...this.feeForm,
-            cardStartDate: this.feeForm.payTime[0],
-            cardEndDate: this.feeForm.payTime[1]
-          }
-          delete requestData.payTime
-          // console.log(requestData)
-          if (this.id) {
-            await editCardApi(requestData)
-            this.$message.success('月卡编辑成功')
-          } else {
-            await addCardApi(requestData)
-            this.$message.success('月卡添加成功')
-          }
-          setTimeout(() => {
-            this.$router.back()
-          }, 1500)
-        })
+        const requestData = {
+          carInfoId: this.id,
+          ...this.feeForm,
+          cardStartDate: this.feeForm.payTime[0],
+          cardEndDate: this.feeForm.payTime[1]
+        }
+        delete requestData.payTime
+        console.log(requestData.cardStartDate, requestData.cardEndDate)
+        await renewCardApi(requestData)
+        this.$message.success('月卡续费成功')
+        setTimeout(() => {
+          this.$router.back()
+        }, 1500)
       })
     },
     resetForm () {
-      this.$refs.carInfoForm.resetFields()
       this.$refs.feeInfoForm.resetFields()
     },
     async getCardDetail () {
-      const { data } = await editCardDetailApi(this.id)
-      // console.log(data)
+      const { data } = await checkCardApi(this.id)
+      console.log(data)
       const { personName, phoneNumber, carNumber, carBrand, carInfoId } = data
       this.carInfoForm = {
         personName,
@@ -204,19 +175,6 @@ export default {
         carNumber,
         carBrand,
         carInfoId
-      }
-      const {
-        cardStartDate,
-        cardEndDate,
-        paymentAmount,
-        paymentMethod,
-        rechargeId
-      } = data
-      this.feeForm = {
-        payTime: [cardStartDate, cardEndDate],
-        paymentAmount,
-        paymentMethod,
-        rechargeId
       }
     }
   },
