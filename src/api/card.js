@@ -6,26 +6,15 @@ export const getCardListApi = params => {
   })
 }
 
-export const addCardApi = data => {
-  return axios.post('/parking/card', data)
-}
+export const addCardApi = data => axios.post('/parking/card', data)
 
-export const editCardDetailApi = id => {
-  return axios.get(`/parking/card/detail/${id}`)
-}
+export const editCardDetailApi = id => axios.get(`/parking/card/detail/${id}`)
 
-export const editCardApi = data => {
-  return axios.put('/parking/card/edit', data)
-}
+export const editCardApi = data => axios.put('/parking/card/edit', data)
 
-export const delCardApi = id => {
-  return axios.delete(`/parking/card/${id}`)
-}
+export const delCardApi = id => axios.delete(`/parking/card/${id}`)
 
-export const checkCardApi = id => {
-  return axios.get(`/parking/card/${id}`)
-}
+export const checkCardApi = id => axios.get(`/parking/card/${id}`)
 
-export const renewCardApi = recharge => {
-  return axios.post('/parking/card/recharge', recharge)
-}
+export const renewCardApi = recharge =>
+  axios.post('/parking/card/recharge', recharge)
