@@ -204,9 +204,10 @@
         >
         <el-descriptions-item label="租赁合同"
           ><el-link
-            :href="`${previewURL}${item.contractName}`"
+            :href="`${previewURL}${item.contractUrl}`"
             type="primary"
             :underline="false"
+            target="_blank"
             >{{ item.contractName }}</el-link
           ></el-descriptions-item
         >
@@ -295,7 +296,7 @@ export default {
     async checkCompany (id) {
       this.drawer = true
       const res = await checkCompanyApi(id)
-      // console.log(res)
+      console.log(res)
       this.checkCompanyList = res.data
       this.srcList[0] = res.data.businessLicenseUrl
       this.srcList[1] = res.data.businessLicenseUrl

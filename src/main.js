@@ -12,6 +12,7 @@ import store from './store'
 import router from './router'
 
 // 注册svg
+
 import '@/icons'
 
 import './permission'
@@ -20,7 +21,6 @@ Vue.use(ElementUI)
 
 Vue.config.productionTip = false
 
-// vue实例化
 new Vue({
   el: '#app',
   router,
