@@ -228,7 +228,7 @@ export default {
       return index + (this.params.page - 1) * this.params.pageSize + 1
     },
     async getBuildingList () {
-      await getBuildingListApi(this.params)
+      const res = await getBuildingListApi(this.params)
       // console.log(res)
       this.buildingData = res.data.rows
       this.total = res.data.total
