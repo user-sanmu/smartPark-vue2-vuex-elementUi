@@ -29,7 +29,12 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column type="index" width="100" label="序号" />
+        <el-table-column
+          type="index"
+          :index="indexMethod"
+          width="100"
+          label="序号"
+        />
         <el-table-column prop="poleName" label="一体杆名称" />
         <el-table-column prop="poleNumber" label="一体杆编号" />
         <el-table-column prop="poleIp" label="一体杆IP" />
@@ -172,6 +177,9 @@ export default {
     this.getAndSearchRod()
   },
   methods: {
+    indexMethod (index) {
+      return index + (this.params.page - 1) * this.params.pageSize + 1
+    },
     delRod (id) {
       this.$confirm('请确认删除一体杆', '')
         .then(async () => {
