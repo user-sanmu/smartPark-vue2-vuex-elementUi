@@ -2,7 +2,7 @@
   <div class="login_body">
     <div class="bg" />
     <div class="box">
-      <div class="title">智慧园区-登录</div>
+      <div class="title">智数园区-登录</div>
       <el-form ref="form" :model="loginForm" :rules="rules">
         <el-form-item label="账号" prop="username">
           <el-input v-model="loginForm.username" />

@@ -158,7 +158,7 @@ export default {
     async editBuilding (id) {
       this.openDialog()
       this.id = id
-      await getBuildingdetail(id)
+      const res = await getBuildingdetail(id)
       // console.log(res)
       const { area, floors, name, propertyFeePrice } = res.data
       this.BuildingForm = { area, floors, name, propertyFeePrice }

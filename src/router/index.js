@@ -106,7 +106,7 @@ export const routes = [
         meta: { title: '一体杆管理' }
       },
       {
-        path: 'waring',
+        path: 'warning',
         permission: 'pole:warning',
         component: () => import('@/views/Rod/RodWarn'),
         meta: { title: '告警记录' }
