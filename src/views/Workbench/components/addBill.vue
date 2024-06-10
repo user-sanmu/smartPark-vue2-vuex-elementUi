@@ -178,6 +178,9 @@ export default {
         this.$message.success('添加成功')
         this.resetForm()
         this.closeDialog()
+        if (this.$parent.$options.name == 'propety') {
+          this.$parent.getBillDataList()
+        }
       })
     },
     handleClose () {

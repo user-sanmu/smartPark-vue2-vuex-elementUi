@@ -12,3 +12,7 @@ export const getRoleRelatedApi = (roleId, params) =>
   axios.get(`/park/sys/roleUser/${roleId}`, { params })
 
 export const addRoleApi = data => axios.post('/park/sys/role', data)
+
+export const editRolePermissionApi = data => axios.put('/park/sys/role', data)
+
+export const delRoleApi = id => axios.delete(`/park/sys/role/${id}`)

@@ -123,6 +123,7 @@ import addBill from '@/views/Workbench/components/addBill'
 import { getEnterPriseListApi, getRentBuildingApi } from '@/api/park'
 import { delBillApi, getBillDataApi, getBillDetailApi } from '@/api/propety'
 export default {
+  name: 'propety',
   data () {
     return {
       params: {
@@ -194,7 +195,7 @@ export default {
       delete this.params.date
       this.params.page = 1
       const res = await getBillDataApi(this.params)
-      console.log(res)
+      // console.log(res)
       this.billData = res.data.rows
       this.total = res.data.total
     }

@@ -16,7 +16,19 @@
           {{ item.roleName }}
         </div>
         <div class="more">
-          <svg-icon icon-class="more" />
+          <el-dropdown>
+            <span class="el-dropdown-link">
+              <svg-icon icon-class="more" />
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native="toEdit(item.roleId)"
+                >编辑角色</el-dropdown-item
+              >
+              <el-dropdown-item @click.native="delRole(item.roleId)"
+                >删除</el-dropdown-item
+              >
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
       </div>
       <el-button
@@ -78,6 +90,7 @@
 
 <script>
 import {
+  delRoleApi,
   getAllPermissionListApi,
   getRoleListApi,
   getRoleRelatedApi,
@@ -111,7 +124,20 @@ export default {
     await this.getAllPermissionList()
     this.activeChange(0)
   },
+
   methods: {
+    delRole (id) {
+      this.$confirm('请确认删除', '删除')
+        .then(async () => {
+          await delRoleApi(id)
+          this.$message.success('删除成功')
+          this.getRoleList()
+        })
+        .catch()
+    },
+    toEdit (id) {
+      this.$router.push(`/sys/addRole?id=${id}`)
+    },
     handleSizeChange (val) {
       this.params.pageSize = val
     },

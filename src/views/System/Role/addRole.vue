@@ -6,7 +6,7 @@
           ><i class="el-icon-arrow-left" />返回</span
         >
         <span class="grey">|</span>
-        <span>添加角色</span>
+        <span>{{ id ? '编辑角色' : '添加角色' }}</span>
       </div>
       <div class="right">黑马程序员</div>
     </header>
@@ -99,7 +99,12 @@
 </template>
 
 <script>
-import { addRoleApi, getAllPermissionListApi } from '@/api/systemRole'
+import {
+  addRoleApi,
+  getAllPermissionListApi,
+  selectRolePermissionApi,
+  editRolePermissionApi
+} from '@/api/systemRole'
 
 export default {
   data () {
@@ -128,12 +133,27 @@ export default {
   },
   created () {
     this.getRoleList()
+    if (this.id) {
+      this.getRoleDetail()
+    }
+  },
+  computed: {
+    id () {
+      return this.$route.query.id
+    }
   },
   methods: {
+    async getRoleDetail () {
+      const res = await selectRolePermissionApi(this.id)
+      this.roleForm = res.data
+      this.$refs.tree.forEach((item, index) => {
+        item.setCheckedKeys(this.roleForm.perms[index])
+      })
+    },
     setCheckedKeys () {
       // this.$refs.checkTree.setCheckedKeys(this.roleForm.perms)
-      // console.log(this.$refs.checkTree)
       const checkTreeList = this.$refs.checkTree
+      // console.log(this.$refs.checkTree)
       checkTreeList.forEach((item, index) =>
         item.setCheckedKeys(this.roleForm.perms[index])
       )
@@ -154,7 +174,7 @@ export default {
       }
     },
     next () {
-      this.$refs.roleForm.validate(flag => {
+      this.$refs.roleForm.validate(async flag => {
         if (!flag) return
         if (this.step === 2) {
           const treeList = this.$refs.tree
@@ -171,13 +191,20 @@ export default {
           this.setCheckedKeys()
         }
         if (this.step >= 3) {
-          this.$confirm('请确认添加角色', '')
-            .then(async () => {
-              await addRoleApi(this.roleForm)
-              this.$message('添加成功')
-              this.$router.back()
-            })
-            .catch(() => this.$message.info('已取消'))
+          if (this.id) {
+            delete this.roleForm.userTotal
+            await editRolePermissionApi(this.roleForm)
+            this.$message.success('编辑成功')
+            this.$router.back()
+          } else {
+            this.$confirm('请确认添加角色', '')
+              .then(async () => {
+                await addRoleApi(this.roleForm)
+                this.$message.success('添加成功')
+                this.$router.back()
+              })
+              .catch(() => this.$message.info('已取消'))
+          }
           return
         }
         this.step++
