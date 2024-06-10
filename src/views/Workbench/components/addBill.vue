@@ -83,14 +83,12 @@ import { addBillApi, computeFeesApi } from '@/api/workbench'
 export default {
   name: 'add-bill',
   props: {
-    dialogVisible: {
-      type: Boolean
-    },
     companyList: Array,
     buildingList: Array
   },
   data () {
     return {
+      dialogVisible: false,
       addForm: {
         enterpriseId: '',
         buildingId: '',
@@ -179,7 +177,7 @@ export default {
         await addBillApi(this.addForm)
         this.$message.success('添加成功')
         this.resetForm()
-        this.$emit('update:dialogVisible', false)
+        this.closeDialog()
       })
     },
     handleClose () {
@@ -187,7 +185,7 @@ export default {
       this.$refs.addForm.clearValidate()
     },
     closeDialog () {
-      this.$emit('update:dialogVisible', false)
+      this.dialogVisible = false
     }
   }
 }

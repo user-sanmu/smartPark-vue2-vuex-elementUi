@@ -94,7 +94,7 @@ export default {
       })
     },
     async openDialog () {
-      this.dialogVisible = true
+      this.$refs.addbill.dialogVisible = true
       const res1 = await getEnterPriseListApi(this.params)
       this.companyList = res1.data.rows
       const res2 = await getRentBuildingApi()
@@ -199,7 +199,7 @@ export default {
       </el-pagination>
     </div>
     <add-bill
-      :dialogVisible.sync="dialogVisible"
+      ref="addbill"
       :companyList="companyList"
       :buildingList="buildingList"
     />

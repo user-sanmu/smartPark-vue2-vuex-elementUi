@@ -29,6 +29,17 @@ export const routes = [
     ]
   },
   {
+    path: '/Propety',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/Propety/index'),
+        meta: { title: '物业费管理', icon: 'el-icon-s-finance' }
+      }
+    ]
+  },
+  {
     path: '/park',
     component: Layout,
     permission: 'park',
@@ -85,6 +96,7 @@ export const routes = [
       }
     ]
   },
+
   {
     path: '/Car/addCard',
     component: () => import('@/views/Car/CarCard/addCard')
