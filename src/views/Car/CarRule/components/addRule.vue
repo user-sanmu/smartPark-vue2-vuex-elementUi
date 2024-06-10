@@ -111,7 +111,7 @@
 </template>
 
 <script>
-import { addRuleApi } from '@/api/carRule'
+import { addRuleApi, editRuleApi } from '@/api/carRule'
 export default {
   props: {
     dialogVisible: {
@@ -213,28 +213,42 @@ export default {
       }
     }
   },
-  created () {
-    console.log(this.$parent)
-  },
   methods: {
     addconfirm () {
       this.$refs.addForm.validate(async flag => {
         if (!flag) return
-        // console.log('success')
-        const res = await addRuleApi(this.addForm)
-        console.log(res)
-
-        this.$message.success('添加成功')
+        if (this.addForm.id) {
+          await editRuleApi(this.addForm)
+          this.$message.success('编辑成功')
+        } else {
+          await addRuleApi(this.addForm)
+          this.$message.success('添加成功')
+        }
         this.closeDialog()
         this.$parent.getRuleList()
-        // this.getRuleList()
       })
     },
     closeDialog () {
       this.$emit('update:dialogVisible', false)
+      this.addForm = {
+        ruleNumber: '', // 计费规则编号
+        ruleName: '', // 计费规则名称
+        chargeType: 'duration', // 计费规则类型 duration / turn / partition
+        chargeCeiling: null,
+        freeDuration: null,
+        // 时长计费独有字段
+        durationTime: null, // 时长计费单位时间
+        durationPrice: null, // 时长计费单位价格
+        durationType: 'hour',
+        // 按次收费独有字段
+        turnPrice: null,
+        // 分段计费独有字段
+        partitionFrameTime: null, // 段内时间
+        partitionFramePrice: null, // 段内费用
+        partitionIncreaseTime: null, // 超出时间
+        partitionIncreasePrice: null
+      }
       this.$refs.addForm.resetFields()
-      this.addForm.freeDuration = ''
-      this.addForm.chargeCeiling = ''
     }
   },
   watch: {

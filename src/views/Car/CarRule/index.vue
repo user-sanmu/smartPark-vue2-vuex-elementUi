@@ -20,8 +20,12 @@
         <el-table-column label="计费规则" prop="ruleNameView" />
         <el-table-column label="操作" fixed="right" width="120">
           <template #default="scope">
-            <el-button size="mini" type="text">编辑</el-button>
-            <el-button size="mini" type="text">删除</el-button>
+            <el-button size="mini" type="text" @click="editRule(scope.row.id)"
+              >编辑</el-button
+            >
+            <el-button size="mini" type="text" @click="delRuleApi(scope.row.id)"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -39,12 +43,12 @@
       </div>
     </div>
     <!-- 弹框 -->
-    <addRule :dialogVisible.sync="dialogVisible" />
+    <addRule :dialogVisible.sync="dialogVisible" ref="addrule" />
   </div>
 </template>
 
 <script>
-import { getRuleListApi } from '@/api/carRule'
+import { delRuleApi, getRuleDetailApi, getRuleListApi } from '@/api/carRule'
 import { utils, writeFileXLSX } from 'xlsx'
 import addRule from './components/addRule.vue'
 export default {
@@ -64,6 +68,21 @@ export default {
     }
   },
   methods: {
+    delRuleApi (id) {
+      this.$confirm('请确认删除', '删除')
+        .then(async () => {
+          await delRuleApi(id)
+          this.$message.success('删除成功')
+          this.getRuleList()
+        })
+        .catch(() => this.$message.info('已取消'))
+    },
+    async editRule (id) {
+      const res = await getRuleDetailApi(id)
+      console.log(res)
+      this.$refs.addrule.addForm = res.data
+      this.dialogVisible = true
+    },
     addFeeRule () {
       this.dialogVisible = true
     },
@@ -89,7 +108,7 @@ export default {
         'ruleNameView'
       ]
       const res = await getRuleListApi(this.params)
-      console.log(res)
+      // console.log(res)
       const list = res.data.rows.map(item => {
         const newArr = []
         tableHeaderKeys.forEach(key => {

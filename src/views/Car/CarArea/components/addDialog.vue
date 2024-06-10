@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-dialog
-      title="添加区域"
+      :title="addForm.id ? '编辑区域' : '添加区域'"
       :visible.sync="dialogVisible"
       width="30%"
       :before-close="handleClose"
@@ -98,6 +98,14 @@ export default {
   },
   methods: {
     resetForm () {
+      this.addForm = {
+        id: null,
+        areaName: '',
+        spaceNumber: null,
+        areaProportion: null,
+        ruleId: null,
+        remark: ''
+      }
       this.$refs.form.resetFields()
     },
     addConfirm () {

@@ -232,6 +232,13 @@ export default {
       })
     },
     resetForm () {
+      this.rodForm = {
+        poleName: '',
+        poleNumber: '',
+        poleIp: '',
+        areaId: '',
+        poleType: ''
+      }
       this.$refs.rodForm.resetFields()
     },
     async openDialog () {
@@ -248,8 +255,7 @@ export default {
       this.resetForm()
     },
     handleClose () {
-      this.dialogVisible = false
-      delete this.rodForm.id
+      this.closeDialog()
     },
     resetRod () {
       this.params = {

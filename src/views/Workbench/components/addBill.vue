@@ -158,7 +158,7 @@ export default {
   methods: {
     resetForm () {
       this.$refs.addForm.resetFields()
-      this.addForm.timeArr = ''
+      this.addForm.timeArr = []
     },
     async computeFees () {
       if (this.addForm.timeArr.length !== 2) return
